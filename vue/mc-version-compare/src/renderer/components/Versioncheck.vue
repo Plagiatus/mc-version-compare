@@ -1,11 +1,9 @@
 <template>
-  <div id="versioncheck" v-if="outdated">
+  <div id="versioncheck" class="alert alert-error" v-if="outdated">
     Your version ({{ appVersion }}) is outdated. A newer version ({{
       latestVersion
-    }}) is available
-    <a href="https://github.com/plagiatus/mc-version-compare/releases/latest"
-      >here</a
-    >.
+    }}) is available.<br>
+    <button @click="openLatestInBrowser">click here</button>
   </div>
 </template>
 
@@ -35,5 +33,17 @@ export default Vue.extend({
     if (this.latestVersion === this.appVersion) return;
     this.outdated = true;
   },
+  methods: {
+    openLatestInBrowser() {
+      require("electron").shell.openExternal("https://github.com/plagiatus/mc-version-compare/releases/latest")
+    }
+  }
 });
 </script>
+
+<style>
+  #versioncheck {
+    text-align: center;
+    padding: 0.4em;
+  }
+</style>

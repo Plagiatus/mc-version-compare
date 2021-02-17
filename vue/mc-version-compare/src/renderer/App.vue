@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <versioncheck></versioncheck>
     <headline></headline>
+    <versioncheck></versioncheck>
     <compare></compare>
     <comparison></comparison>
   </div>

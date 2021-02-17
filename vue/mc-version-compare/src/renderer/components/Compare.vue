@@ -151,6 +151,10 @@ export default Vue.extend({
         return elem.id === n;
       });
     },
+    unlock() {
+      this.comparing = false;
+      console.log(this.comparing);
+    }
   },
   data() {
     return {
@@ -167,6 +171,7 @@ export default Vue.extend({
   },
   created() {
     this.readAvailableVersions();
+    this.$root.$on("comparisonDone", this.unlock);
   },
   watch: {
     includeSnapshots(val) {
