@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <versioncheck></versioncheck>
     <headline></headline>
     <compare></compare>
     <comparison></comparison>
@@ -11,6 +12,7 @@ import Vue from "vue";
 import Headline from "@/components/Headline";
 import Compare from "@/components/Compare";
 import Comparison from "@/components/Comparison";
+import Versioncheck from "@/components/Versioncheck";
 
 export default Vue.extend({
   name: "mc-version-compare",
@@ -18,6 +20,7 @@ export default Vue.extend({
     Headline,
     Compare,
     Comparison,
+    Versioncheck
   },
   data: {},
   methods: {},

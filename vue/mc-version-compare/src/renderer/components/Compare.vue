@@ -25,15 +25,15 @@
         </select>
 
         <label class="switch">
-          <input type="checkbox" v-model="includeSnapshots" />
+          <input type="checkbox" v-model="includeSnapshots" :disabled="comparing" />
           <span class="slider round"></span>
         </label>
         include snapshots
       </div>
-      <span
-        >To add a version, start the game with that version selected, so the
-        relevant files are downloaded to your system.</span
-      >
+      <span>
+        To add a version, start the game with that version selected, so the
+        relevant files are downloaded to your system.
+      </span>
       <div>
         <button @click="compare" :disabled="comparing">Go!</button>
       </div>
@@ -94,7 +94,8 @@ export default Vue.extend({
       this.comparing = true;
       this.$root.$emit("compare", this.originalVersion, this.comparisonVersion);
     },
-    readAvailableVersions: function () {
+    readAvailableVersions: async function () {
+      await this.getOfficialVersions();
       let path = process.env.APPDATA + "/.minecraft/versions";
       let versions = fs.readdirSync(path);
       for (let i = 0; i < versions.length; i++) {
@@ -105,13 +106,53 @@ export default Vue.extend({
           i--;
         }
       }
-      this.options = versions;
-      if (this.options.length <= 0) {
-        this.error = "Couldn't find any valid versions. Please download the versions you want to compare through the minecraft launcher.";
+      this.localVersions = versions;
+      if (this.localVersions.length <= 0) {
+        this.error =
+          "Couldn't find any valid versions. Please download the versions you want to compare through the minecraft launcher.";
       }
+
+      this.updateVisibleOptions();
+    },
+    getOfficialVersions: async function () {
+      this.officialVersions = (
+        await (
+          await fetch(
+            "https://launchermeta.mojang.com/mc/game/version_manifest.json"
+          )
+        ).json()
+      ).versions;
+    },
+    updateVisibleOptions: function () {
+      this.options = [];
+      for (let lv of this.localVersions) {
+        let ov = this.getOfficialFromName(lv);
+        if (ov.type === "snapshot") {
+          if (this.includeSnapshots) {
+            this.options.push(lv);
+          }
+        } else {
+          this.options.push(lv);
+        }
+      }
+      this.options.sort(this.sortOptions);
+    },
+    sortOptions(a, b) {
+      let offA = this.getOfficialFromName(a);
+      let offB = this.getOfficialFromName(b);
+
+      let da = new Date(offA.releaseTime);
+      let db = new Date(offB.releaseTime);
+
+      return db.getTime() - da.getTime();
+    },
+    getOfficialFromName(n) {
+      return this.officialVersions.find((elem) => {
+        return elem.id === n;
+      });
     },
   },
-  data () {
+  data() {
     return {
       originalVersion: "",
       comparisonVersion: "",
@@ -120,10 +161,17 @@ export default Vue.extend({
       warning: "",
       error: "",
       includeSnapshots: true,
+      officialVersions: [{}],
+      localVersions: [""],
     };
   },
-  created () {
+  created() {
     this.readAvailableVersions();
+  },
+  watch: {
+    includeSnapshots(val) {
+      this.updateVisibleOptions();
+    }
   },
 });
 </script>
