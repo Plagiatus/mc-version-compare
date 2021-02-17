@@ -19,7 +19,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "mc-version-compare",
+    "productName": "Minecraft Version Compare",
     "appId": "net.plagiatus.mc-version-compare",
     "directories": {
       "output": "build"
