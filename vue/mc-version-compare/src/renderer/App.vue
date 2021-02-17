@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <headline></headline>
-    <compare @compare="compare"></compare>
+    <compare></compare>
     <comparison></comparison>
   </div>
 </template>
@@ -20,11 +20,7 @@ export default Vue.extend({
     Comparison,
   },
   data: {},
-  methods: {
-    compare: function (originalVersion, comparisonVersion) {
-      console.log(originalVersion, comparisonVersion);
-    },
-  },
+  methods: {},
 });
 </script>
 
@@ -164,5 +160,9 @@ input:checked + .slider:before {
   color: #842029 !important;
   background-color: #f8d7da !important;
   border-color: #f5c2c7 !important;
+}
+
+.loading {
+  text-align: center;
 }
 </style>

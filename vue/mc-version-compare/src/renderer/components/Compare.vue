@@ -1,6 +1,6 @@
 <template>
   <div id="compare-wrapper">
-    <div v-if="options.length <= 0">Loading...</div>
+    <div class="loading" v-if="options.length <= 0">Loading...</div>
     <div v-else id="compare">
       <div>
         Compare
@@ -84,11 +84,15 @@ export default Vue.extend({
     compare: function () {
       this.warning = "";
       if (!this.originalVersion || !this.comparisonVersion) {
-        this.warning = "Please select both versions.";
+        this.warning = "Please select two versions.";
+        return;
+      }
+      if (this.originalVersion === this.comparisonVersion) {
+        this.warning = "The two versions need to be different.";
         return;
       }
       this.comparing = true;
-      this.$emit("compare", this.originalVersion, this.comparisonVersion);
+      this.$root.$emit("compare", this.originalVersion, this.comparisonVersion);
     },
     readAvailableVersions: function () {
       let path = process.env.APPDATA + "/.minecraft/versions";
