@@ -1,7 +1,10 @@
 <template>
   <div>
     <span class="top"> {{ file.name }} {{ old ? "(old)" : "(new)" }}</span>
-    <div class="file-display-content">
+    <div v-if="imageFile">
+      <img v-if="(old ? file.oldContent : file.newContent)" :src="'data:image/png;base64,' + (old ? file.oldContent : file.newContent)">
+    </div>
+    <div class="file-display-content" v-else>
       <span
         v-for="(diff, index) in diffContent"
         :key="index"
@@ -45,6 +48,9 @@ export default Vue.extend({
       }
       return diffs;
     },
+    imageFile() {
+      return this.file && this.file.name && this.file.name.endsWith(".png")
+    }
   },
 });
 </script>
@@ -59,9 +65,9 @@ span.top {
   text-align: center;
 }
 
-div.file-display-content span {
+/* div.file-display-content span {
   display: block;
-}
+} */
 
 .changed {
   color: orange;

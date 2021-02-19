@@ -184,6 +184,11 @@ export default Vue.extend({
             if (hash1 !== hash2) {
               // console.log("png", filename);
               changedFiles.push(filename);
+              this.files[filename] = {
+                status: 0,
+                newContent: await zip2.file(filename).async(textfile ? "string" : "base64"),
+                oldContent: await zip1.file(filename).async(textfile ? "string" : "base64"),
+              };
             }
           } else if (filename.endsWith(".nbt")) {
             // no idea how to properly compare nbt files, so i'm going to ignore them
@@ -194,7 +199,7 @@ export default Vue.extend({
           removedFiles.push(filename);
           this.files[filename] = {
             status: -1,
-            removed: await zip1
+            oldContent: await zip1
               .file(filename)
               .async(textfile ? "string" : "base64"),
           };
@@ -202,7 +207,9 @@ export default Vue.extend({
           addedFiles.push(filename);
           this.files[filename] = {
             status: 1,
-            added: await zip2.file(filename).async(textfile ? "string" : "base64"),
+            newContent: await zip2
+              .file(filename)
+              .async(textfile ? "string" : "base64"),
           };
         }
       }
@@ -218,6 +225,7 @@ export default Vue.extend({
       return true;
     },
     displayFile(file) {
+      console.log("displayFile", file);
       this.shownFile = file;
     },
   },
