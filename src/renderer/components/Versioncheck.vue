@@ -1,9 +1,8 @@
 <template>
-  <div id="versioncheck" class="alert alert-error" v-if="outdated">
-    Your version ({{ appVersion }}) is outdated. A newer version ({{
+  <div id="versioncheck" class="alert alert-error" v-if="outdated" @click="openLatestInBrowser">
+    <span>Your version ({{ appVersion }}) is outdated. A newer version ({{
       latestVersion
-    }}) is available.<br>
-    <button @click="openLatestInBrowser">click here</button>
+    }}) is available. Click here to download.</span>
   </div>
 </template>
 
@@ -45,5 +44,6 @@ export default Vue.extend({
   #versioncheck {
     text-align: center;
     padding: 0.4em;
+    cursor: pointer;
   }
 </style>

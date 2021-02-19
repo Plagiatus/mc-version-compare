@@ -4,7 +4,9 @@
     <div v-else id="compare">
       <div>
         Compare
+        <input type="file" @change="newJarFile" v-if="useFileSelector">
         <select
+          v-else
           :disabled="comparing"
           v-model="originalVersion"
           name="ogVersionSelector"
@@ -14,7 +16,9 @@
           <option v-for="o in options" :key="o" :value="o">{{ o }}</option>
         </select>
         to
+        <input type="file" @change="oldJarFile" v-if="useFileSelector">
         <select
+          v-else
           :disabled="comparing"
           v-model="comparisonVersion"
           name="compVersionSelector"
@@ -24,11 +28,28 @@
           <option v-for="o in options" :key="o" :value="o">{{ o }}</option>
         </select>
 
-        <label class="switch">
-          <input type="checkbox" v-model="includeSnapshots" :disabled="comparing" />
-          <span class="slider round"></span>
-        </label>
-        include snapshots
+        <div class="switch-wrapper" style="margin-left: auto">
+          <label class="switch">
+            <input
+              type="checkbox"
+              v-model="includeSnapshots"
+              :disabled="comparing"
+            />
+            <span class="slider round"></span>
+          </label>
+          include snapshots
+        </div>
+        <!-- <div class="switch-wrapper">
+          <label class="switch">
+            <input
+              type="checkbox"
+              v-model="useFileSelector"
+              :disabled="comparing"
+            />
+            <span class="slider round"></span>
+          </label>
+          select files directly
+        </div> -->
       </div>
       <span>
         To add a version, start the game with that version selected, so the
@@ -68,9 +89,18 @@ span {
   color: var(--logo-blue);
 }
 
-label {
+/* label {
   margin-left: 2em;
   margin-right: 0.5em;
+} */
+
+div.switch-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+  margin: 0 5px;
 }
 </style>
 
@@ -127,6 +157,7 @@ export default Vue.extend({
       this.options = [];
       for (let lv of this.localVersions) {
         let ov = this.getOfficialFromName(lv);
+        if (!ov) continue;
         if (ov.type === "snapshot") {
           if (this.includeSnapshots) {
             this.options.push(lv);
@@ -154,6 +185,9 @@ export default Vue.extend({
     unlock() {
       this.comparing = false;
       console.log(this.comparing);
+    },
+    newJarFile(e) {
+      console.log(e.currentTarget.value);
     }
   },
   data() {
@@ -165,8 +199,11 @@ export default Vue.extend({
       warning: "",
       error: "",
       includeSnapshots: true,
+      useFileSelector: false,
       officialVersions: [{}],
       localVersions: [""],
+      newJarFilePath: "",
+      oldJarFilePath: "",
     };
   },
   created() {
@@ -176,7 +213,7 @@ export default Vue.extend({
   watch: {
     includeSnapshots(val) {
       this.updateVisibleOptions();
-    }
+    },
   },
 });
 </script>
