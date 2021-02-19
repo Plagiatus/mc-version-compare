@@ -4,7 +4,7 @@
     <div v-else id="compare">
       <div>
         Compare
-        <input type="file" @change="newJarFile" v-if="useFileSelector">
+        <input type="file" v-if="useFileSelector">
         <select
           v-else
           :disabled="comparing"
@@ -16,7 +16,7 @@
           <option v-for="o in options" :key="o" :value="o">{{ o }}</option>
         </select>
         to
-        <input type="file" @change="oldJarFile" v-if="useFileSelector">
+        <input type="file" v-if="useFileSelector">
         <select
           v-else
           :disabled="comparing"
@@ -185,9 +185,6 @@ export default Vue.extend({
     unlock() {
       this.comparing = false;
       console.log(this.comparing);
-    },
-    newJarFile(e) {
-      console.log(e.currentTarget.value);
     }
   },
   data() {

@@ -34,10 +34,9 @@ export default Vue.extend({
           parent = folder;
         }
         let item = this.makeNode(parent, path[0]);
-        item = {
-          ...item,
-          ...this.files[file],
-        };
+        for (let key in this.files[file]) {
+          item[key] = this.files[file][key] || item[key] || 0;
+        }
         this.addItem(parent, item);
       }
       console.log(this.rootData);
