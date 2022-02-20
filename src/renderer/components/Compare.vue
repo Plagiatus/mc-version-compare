@@ -4,7 +4,7 @@
     <div v-else id="compare">
       <div>
         Compare
-        <input type="file" v-if="useFileSelector">
+        <input type="file" v-if="useFileSelector" accept=".jar" @change="changedFile" id="oldJarFile">
         <select
           v-else
           :disabled="comparing"
@@ -16,7 +16,7 @@
           <option v-for="o in options" :key="o" :value="o">{{ o }}</option>
         </select>
         to
-        <input type="file" v-if="useFileSelector">
+        <input type="file" v-if="useFileSelector" accept=".jar" @change="changedFile" id="newJarFile">
         <select
           v-else
           :disabled="comparing"
@@ -28,7 +28,7 @@
           <option v-for="o in options" :key="o" :value="o">{{ o }}</option>
         </select>
 
-        <div class="switch-wrapper" style="margin-left: auto">
+        <div class="switch-wrapper" style="margin-left: auto" v-if="!useFileSelector">
           <label class="switch">
             <input
               type="checkbox"
@@ -39,7 +39,7 @@
           </label>
           include snapshots
         </div>
-        <!-- <div class="switch-wrapper">
+        <div class="switch-wrapper">
           <label class="switch">
             <input
               type="checkbox"
@@ -49,7 +49,7 @@
             <span class="slider round"></span>
           </label>
           select files directly
-        </div> -->
+        </div>
       </div>
       <span>
         To add a version, start the game with that version selected, so the
@@ -113,6 +113,23 @@ export default Vue.extend({
   methods: {
     compare: function () {
       this.warning = "";
+      if (this.useFileSelector) {
+        if (!this.newJarFile || !this.oldJarFile) {
+          this.warning = "Please select two files."
+          return;
+        }
+        if (this.newJarFile.path === this.oldJarFile.path) {
+          this.warning = "The two files need to be different."
+          return;
+        }
+        if (!this.newJarFile.name.endsWith(".jar") || !this.oldJarFile.name.endsWith(".jar")) {
+          this.warning = "The files need to be .jar files."
+          return;
+        }
+        this.comparing = true;
+        this.$root.$emit("compareFiles", this.oldJarFile, this.newJarFile);
+        return;
+      }
       if (!this.originalVersion || !this.comparisonVersion) {
         this.warning = "Please select two versions.";
         return;
@@ -185,6 +202,15 @@ export default Vue.extend({
     unlock() {
       this.comparing = false;
       console.log(this.comparing);
+    },
+    changedFile(event) {
+      let file = event.target.files[0];
+      let id = event.target.id;
+      if (id === "oldJarFile") {
+        this.oldJarFile = file;
+      } else if (id === "newJarFile") {
+        this.newJarFile = file;
+      }
     }
   },
   data() {
@@ -199,8 +225,8 @@ export default Vue.extend({
       useFileSelector: false,
       officialVersions: [{}],
       localVersions: [""],
-      newJarFilePath: "",
-      oldJarFilePath: "",
+      newJarFile: undefined,
+      oldJarFile: undefined,
     };
   },
   created() {

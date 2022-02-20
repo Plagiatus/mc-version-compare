@@ -109,13 +109,8 @@ export default Vue.extend({
       this.files = {};
       this.shownFile = {};
 
-      let path = process.env.APPDATA + "/.minecraft/versions";
-      let data1 = await fspReadFile(
-        path + "/" + originalVersion + "/" + originalVersion + ".jar"
-      );
-      let data2 = await fspReadFile(
-        path + "/" + comparisonVersion + "/" + comparisonVersion + ".jar"
-      );
+      let data1 = await fspReadFile(originalVersion);
+      let data2 = await fspReadFile(comparisonVersion);
       let zip1 = await JSZip.loadAsync(data1);
       let zip2 = await JSZip.loadAsync(data2);
 
@@ -219,6 +214,16 @@ export default Vue.extend({
       this.$root.$emit("comparisonDone");
     },
 
+    compareFiles(f1, f2) {
+      this.compare(f1.path, f2.path);
+    },
+    compareVersions(f1, f2) {
+      let path = process.env.APPDATA + "/.minecraft/versions";
+      let file1 = path + "/" + f1 + "/" + f1 + ".jar";
+      let file2 = path + "/" + f2 + "/" + f2 + ".jar";
+      this.compare(file1, file2);
+    },
+
     doesFileNeedToBeChecked(f) {
       if (!f.startsWith("data") && !f.startsWith("assets")) return false;
       if (f.endsWith(".class")) return false;
@@ -230,7 +235,8 @@ export default Vue.extend({
     },
   },
   created: function () {
-    this.$root.$on("compare", this.compare);
+    this.$root.$on("compare", this.compareVersions);
+    this.$root.$on("compareFiles", this.compareFiles);
     this.$root.$on("selectedFile", this.displayFile);
   },
 });

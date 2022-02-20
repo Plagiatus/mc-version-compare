@@ -1,6 +1,6 @@
 {
   "name": "mc-version-compare",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Plagiatus (contact@plagiatus.net)",
   "description": "A web application that shows the differences between minecraft version files.",
   "license": "MIT",
